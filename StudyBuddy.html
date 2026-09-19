@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Study Buddy — Dexter Student Workload Tracker</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --maroon:#7a1022;
+  --maroon-dark:#560b18;
+  --maroon-soft:#f7e9ed;
+  --navy:#17324d;
+  --ink:#25313b;
+  --muted:#6f7c86;
+  --line:#e5e9ed;
+  --paper:#ffffff;
+  --bg:#f5f7f9;
+  --green:#2f7656;
+  --gold:#d7a72b;
+}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{height:70px;background:var(--paper);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:10}
+.logo{display:flex;gap:11px;align-items:center}.mark{width:42px;height:42px;border-radius:12px;background:var(--maroon);color:#fff;display:grid;place-items:center;font-size:22px;box-shadow:0 4px 12px #7a102220}
+.logo b{font-size:20px;letter-spacing:-.3px}.logo small{display:block;color:var(--muted);font-size:11px}
+.brandpill{font-size:10px;font-weight:800;letter-spacing:.7px;color:var(--maroon);background:var(--maroon-soft);padding:5px 8px;border-radius:999px;margin-left:6px}
+.avatar{border:0;border-radius:50%;width:40px;height:40px;background:var(--maroon);color:white;font-weight:800;cursor:pointer}
+.layout{display:flex;min-height:calc(100vh - 70px)}
+aside{width:235px;background:#fff;border-right:1px solid var(--line);padding:20px 13px}
+nav button,.sidebtn{display:block;width:100%;padding:12px 14px;border:0;background:transparent;text-align:left;border-radius:10px;margin-bottom:5px;color:#687681;font-weight:700;cursor:pointer}
+nav button.active,nav button:hover,.sidebtn:hover{background:var(--maroon-soft);color:var(--maroon)}
+.sidebtn{border:1px solid #ead7dc;margin-top:6px;color:var(--maroon);background:#fff}
+main{width:100%;max-width:1420px;margin:auto;padding:35px 40px}
+.eyebrow{font-size:10px;font-weight:900;letter-spacing:1.4px;color:var(--maroon)}
+h1{font-size:40px;line-height:1.05;margin:8px 0;font-weight:850;letter-spacing:-1px}
+h1 span{color:var(--maroon)}h2{margin:0 0 5px}p{color:var(--muted)}
+.hero{display:flex;justify-content:space-between;align-items:end;margin-bottom:25px}
+.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:800;cursor:pointer}
+.primary{background:var(--maroon);color:#fff}.primary:hover{background:var(--maroon-dark)}
+.secondary{background:#f0f3f5;color:var(--navy)}
+.outline{background:#fff;color:var(--maroon);border:1px solid #dec1c8}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.card,.panel{background:#fff;border:1px solid var(--line);border-radius:15px;padding:19px;box-shadow:0 3px 14px #17324d0a}
+.stat{display:flex;gap:13px;align-items:center}.staticon{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:var(--maroon-soft);color:var(--maroon);font-weight:900}
+.number{font-size:25px;font-weight:850}.label{font-size:12px;color:#84909a}
+.cols{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;margin-bottom:20px}
+.panelhead{display:flex;justify-content:space-between;margin-bottom:13px}.panelhead p{font-size:12px;margin:4px 0}
+.row{display:grid;grid-template-columns:10px 1fr auto;gap:11px;padding:13px 0;border-bottom:1px solid #edf0f2}
+.dot{width:9px;height:9px;border-radius:50%;margin-top:5px;display:inline-block}.p0{background:#c83d4a}.p1{background:#d99a35}.p2{background:#4d946f}.p3{background:#9aa6af}
+.title{font-weight:800;font-size:13px}.meta{font-size:11px;color:#84909a;margin-top:3px}.due{font-size:11px;font-weight:800;color:#697680}
+.bar{margin:12px 0}.barline{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}.track{height:8px;background:#edf0f2;border-radius:20px;overflow:hidden}.fill{height:100%;background:var(--maroon);border-radius:20px}
+.capture{display:flex;gap:14px;align-items:center;border:1px dashed #d5b6be;background:#fcf8f9;padding:18px;border-radius:12px}.capture strong{font-size:14px}.capture p{font-size:12px;margin:4px 0}
+.canvasbadge{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:900;color:#fff;background:#e64b2e;padding:6px 9px;border-radius:7px;letter-spacing:.3px}
+.view{display:none}.view.show{display:block}.pagehead{display:flex;justify-content:space-between;align-items:end;margin-bottom:24px}
+.toolbar{display:flex;gap:9px;margin-bottom:16px}.toolbar input,.toolbar select,input,textarea,select{border:1px solid #d9e0e5;border-radius:9px;padding:10px;background:#fff;font:inherit}.toolbar input{flex:1}
+.assignment{background:#fff;border:1px solid var(--line);border-radius:13px;padding:16px;margin-bottom:9px;display:flex;justify-content:space-between;gap:15px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.chip{background:#eef1f3;padding:5px 8px;border-radius:15px;font-size:10px;font-weight:850;color:#596772}
+.classes{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.class h3{margin:10px 0 3px}.class p{font-size:12px;margin:0}.big{font-size:28px;font-weight:850;margin-top:20px}
+.calendar{background:#fff;border:1px solid var(--line);border-radius:15px;padding:20px}.calhead{display:flex;justify-content:center;align-items:center;gap:25px;margin-bottom:15px}.calhead button{border:0;background:#eef1f3;border-radius:9px;padding:8px 12px;cursor:pointer}
+.week,.days{display:grid;grid-template-columns:repeat(7,1fr)}.week div{text-align:center;color:#84909a;font-size:11px;font-weight:850;padding:8px}
+.day{min-height:95px;border:1px solid #edf0f2;padding:7px;font-size:11px}.day small{display:block;background:var(--maroon-soft);color:var(--maroon);border-radius:5px;padding:4px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.modal{position:fixed;inset:0;background:#17253299;display:none;place-items:center;padding:20px;z-index:30}.modal.open{display:grid}
+.box{background:#fff;border-radius:18px;padding:26px;width:min(720px,100%);position:relative;max-height:92vh;overflow:auto}.close{position:absolute;right:15px;top:13px;border:0;border-radius:50%;width:30px;height:30px;cursor:pointer}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form label,.box>label{font-size:11px;font-weight:850;color:#596772;display:flex;flex-direction:column;gap:5px;margin-bottom:10px}.full{grid-column:1/-1}
+.preview{background:#fafbfc;border:1px solid #dce2e6;padding:14px;border-radius:11px;margin-top:12px;font-size:12px}
+.extractgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.extractgrid label{font-size:11px;font-weight:800;color:#596772;display:flex;flex-direction:column;gap:5px}.extractgrid .full{grid-column:1/-1}
+.helper{font-size:11px;color:#7a8790;background:#f5f7f8;border-radius:9px;padding:10px;margin-top:9px}
+.toast{position:fixed;right:20px;bottom:20px;background:#25313b;color:#fff;padding:12px 16px;border-radius:10px;opacity:0;transform:translateY(10px);transition:.2s;z-index:50}.toast.show{opacity:1;transform:none}
+.smalllink{font-size:11px;color:var(--maroon);font-weight:800;cursor:pointer}
+@media(max-width:850px){aside{width:70px}aside span,.sidebtn span{display:none}main{padding:25px 18px}.stats{grid-template-columns:1fr 1fr}.cols,.classes{grid-template-columns:1fr}}
+@media(max-width:600px){.hero,.pagehead{display:block}.form,.extractgrid{grid-template-columns:1fr}.toolbar{flex-direction:column}h1{font-size:33px}.brandpill{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="mark">⚓</div>
+    <div><b>Study Buddy</b><span class="brandpill">DEXTER DREADNAUGHTS</span><small>Your schoolwork, organized.</small></div>
+  </div>
+  <button class="avatar" id="account">S</button>
+</header>
+
+<div class="layout">
+<aside>
+<nav>
+<button class="active" data-view="dash">⌂ <span>Dashboard</span></button>
+<button data-view="assign">✓ <span>Assignments</span></button>
+<button data-view="classes">▦ <span>Classes</span></button>
+<button data-view="calendar">◷ <span>Calendar</span></button>
+</nav>
+<br>
+<button class="sidebtn" id="paste">＋ <span>Paste Canvas Assignment</span></button>
+</aside>
+
+<main>
+<section id="dash" class="view show">
+<div class="hero">
+  <div><div class="eyebrow">GOOD MORNING</div><h1>Hey, <span id="heroName">Student</span>.<br>Let's get <span>things done.</span></h1><p>Keep your Canvas work in one place and stay ahead.</p></div>
+  <button class="btn primary" id="add">＋ Add assignment</button>
+</div>
+
+<div class="stats">
+<div class="card stat"><div class="staticon">!</div><div><div class="number" id="soon">0</div><div class="label">Due soon</div></div></div>
+<div class="card stat"><div class="staticon">✓</div><div><div class="number" id="progress">0</div><div class="label">In progress</div></div></div>
+<div class="card stat"><div class="staticon">★</div><div><div class="number" id="done">0</div><div class="label">Completed</div></div></div>
+<div class="card stat"><div class="staticon">◷</div><div><div class="number" id="hours">0h</div><div class="label">Remaining workload</div></div></div>
+</div>
+
+<div class="cols">
+<div class="panel"><div class="panelhead"><div><h2>Up next</h2><p>Your closest deadlines</p></div><button class="btn secondary" data-view="assign">View all</button></div><div id="next"></div></div>
+<div class="panel"><div class="panelhead"><div><h2>Workload</h2><p>Hours by class</p></div></div><div id="bars"></div></div>
+</div>
+
+<div class="panel">
+<div class="panelhead">
+  <div><h2>Canvas Quick Capture</h2><p>Copy an assignment from Canvas, paste it here, review the details, and add it.</p></div>
+  <button class="btn secondary" id="paste2"><span class="canvasbadge">CANVAS</span></button>
+</div>
+<div class="capture"><b style="font-size:27px;color:var(--maroon)">⌁</b><div><strong>Copy → paste → review → done.</strong><p>Study Buddy looks for the assignment name, course, teacher, due date, points, and description.</p></div></div>
+</div>
+</section>
+
+<section id="assign" class="view">
+<div class="pagehead"><div><div class="eyebrow">YOUR WORK</div><h1>Assignments</h1><p>Everything you need to finish, in one place.</p></div><button class="btn primary" id="add2">＋ Add assignment</button></div>
+<div class="toolbar"><input id="search" placeholder="Search assignments..."><select id="filter"><option>All statuses</option><option>Not started</option><option>In progress</option><option>Completed</option></select></div>
+<div id="list"></div>
+</section>
+
+<section id="classes" class="view">
+<div class="pagehead"><div><div class="eyebrow">ORGANIZE</div><h1>Classes</h1><p>Teachers and workload by class.</p></div></div>
+<div class="classes" id="classlist"></div>
+</section>
+
+<section id="calendar" class="view">
+<div class="pagehead"><div><div class="eyebrow">PLAN AHEAD</div><h1>Calendar</h1><p>Your assignment deadlines.</p></div></div>
+<div class="calendar"><div class="calhead"><button id="prev">‹</button><h2 id="month"></h2><button id="nextm">›</button></div><div class="week"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div><div class="days" id="days"></div></div>
+</section>
+</main></div>
+
+<div class="modal" id="assignmentModal">
+<div class="box"><button class="close" data-close="assignmentModal">×</button>
+<div class="eyebrow">NEW ASSIGNMENT</div><h2>Add something to your workload</h2>
+<form id="form"><div class="form">
+<label>Assignment name<input name="name" required></label>
+<label>Class<select name="class" id="classSelect"></select></label>
+<label>Teacher<input name="teacher"></label>
+<label>Due date<input name="due" type="date" required></label>
+<label>Priority<select name="priority"><option>P0</option><option selected>P1</option><option>P2</option><option>P3</option></select></label>
+<label>Points<input name="points" type="number"></label>
+<label>Status<select name="status"><option>Not started</option><option>In progress</option><option>Completed</option></select></label>
+<label>Estimated hours<input name="hours" type="number" value="1" step=".25"></label>
+<label class="full">Notes<textarea name="notes" rows="3"></textarea></label>
+</div><button class="btn primary" style="width:100%" type="submit">Add assignment</button></form>
+</div></div>
+
+<div class="modal" id="pasteModal">
+<div class="box"><button class="close" data-close="pasteModal">×</button>
+<div class="eyebrow">CANVAS QUICK CAPTURE</div>
+<h2>Paste your Canvas assignment</h2>
+<p>Copy the assignment text from Canvas and paste it below. Study Buddy will detect common Canvas labels automatically.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:9px">
+<button class="btn primary" id="clipboardBtn">Paste from clipboard</button>
+<button class="btn secondary" id="clearPaste">Clear</button>
+</div>
+<textarea id="pasteText" rows="10" style="width:100%" placeholder="Example:
+IB Bio Syllabus
+IB Biology HL
+Due: September 22, 2026 at 11:59 PM
+Points: 10
+Dan Witte
+Complete the syllabus questions..."></textarea>
+<div class="helper">Tip: On Canvas, open the assignment, use Ctrl+C (or Cmd+C) to copy the assignment details, then paste here. You can edit anything Study Buddy misses before saving.</div>
+<div id="preview"></div>
+<button class="btn primary" style="width:100%;margin-top:12px" id="parse">Extract assignment →</button>
+</div></div>
+
+<div class="modal" id="accountModal">
+<div class="box" style="max-width:440px"><button class="close" data-close="accountModal">×</button>
+<div class="eyebrow">YOUR PROFILE</div><h2>Your Study Buddy profile</h2><p>This version saves your profile and assignments in this browser.</p>
+<label>Name<input id="name"></label><label>School<input id="school"></label>
+<button class="btn primary" style="width:100%" id="saveAccount">Save profile</button>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY="studybuddy-dexter-v2";
+const defaultData={
+profile:{name:"Student",school:"Dexter High School"},
+classes:[
+{id:"bio",name:"IB Biology HL",teacher:"Dan Witte",color:"#2f7656",type:"IB",aliases:["IB Bio","Biology HL","Bio"]},
+{id:"spanish",name:"IB Spanish SL",teacher:"Maria Vazquez",color:"#7a1022",type:"IB",aliases:["IB Spanish","Spanish SL","Spanish"]},
+{id:"english",name:"IB English HL",teacher:"Patrick Staley",color:"#17324d",type:"IB",aliases:["IB English","English HL","English"]},
+{id:"business",name:"IB Business Management SL",teacher:"Jason Miller",color:"#8b5a91",type:"IB",aliases:["IB Business","Business Management","Business"]},
+{id:"math",name:"Pre-Calculus",teacher:"Ryan Fisher",color:"#5c8199",type:"Regular",aliases:["Precalc","Pre-Calc","Pre Calculus","Math"]},
+{id:"yoga",name:"Yoga and Mindfulness",teacher:"Kelly Ottaviani",color:"#9b748f",type:"Regular",aliases:["Yoga","Mindfulness"]}
+],
+assignments:[
+{name:"IB Bio get to know you",class:"bio",teacher:"Dan Witte",status:"Completed",priority:"P0",due:"2026-09-14",hours:1},
+{name:"IB Bio Syllabus",class:"bio",teacher:"Dan Witte",status:"In progress",priority:"P1",due:"2026-09-14",hours:1},
+{name:"Spanish Syllabus Signator",class:"spanish",teacher:"Maria Vazquez",status:"Not started",priority:"P2",due:"2026-09-11",hours:.5},
+{name:"Graded HW Sheet #2",class:"math",teacher:"Ryan Fisher",status:"In progress",priority:"P0",due:"2026-09-22",hours:1.5},
+{name:"Spanish Quiz Study",class:"spanish",teacher:"Maria Vazquez",status:"Completed",priority:"P2",due:"2026-09-17",hours:1}
+]};
+let data=JSON.parse(localStorage.getItem(KEY)||"null")||defaultData;
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function cls(id){return data.classes.find(c=>c.id===id)||{name:"Unknown",teacher:""}}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function fmt(s){if(!s)return "No due date";return new Date(s+"T12:00").toLocaleDateString(undefined,{month:"short",day:"numeric"})}
+function toast(x){let t=document.getElementById("toast");t.textContent=x;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)}
+function normalize(s){return String(s||"").toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/[^\w\s-]/g," ").replace(/\s+/g," ").trim()}
+function isoDateFromParts(month,day,year){
+  const y=year||new Date().getFullYear();
+  const d=new Date(y,month-1,day);
+  if(isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+const monthMap={jan:1,january:1,feb:2,february:2,mar:3,march:3,apr:4,april:4,may:5,jun:6,june:6,jul:7,july:7,aug:8,august:8,sep:9,sept:9,september:9,oct:10,october:10,nov:11,november:11,dec:12,december:12};
+function parseDate(text){
+  let m=text.match(/\b(20\d{2})-(\d{1,2})-(\d{1,2})\b/); if(m)return isoDateFromParts(+m[2],+m[3],+m[1]);
+  m=text.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2}|\d{2})\b/); if(m){let y=String(m[3]);y=y.length===2?"20"+y:y;return isoDateFromParts(+m[1],+m[2],+y)}
+  m=text.match(/\b([A-Za-z]{3,9})\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?:,)?\s+(20\d{2})\b/i); if(m)return isoDateFromParts(monthMap[m[1].toLowerCase().replace(".","")],+m[2],+m[3]);
+  m=text.match(/\b([A-Za-z]{3,9})\.?\s+(\d{1,2})(?:st|nd|rd|th)?\b/i); if(m){let mo=monthMap[m[1].toLowerCase().replace(".","")]; if(mo)return isoDateFromParts(mo,+m[2],new Date().getFullYear())}
+  return "";
+}
+function findClass(text){
+  const n=normalize(text);
+  let best=null,bestScore=0;
+  for(const c of data.classes){
+    const candidates=[c.name,...(c.aliases||[])];
+    for(const raw of candidates){
+      const a=normalize(raw);
+      if(!a)continue;
+      let score=0;
+      if(n.includes(a))score=100+a.length;
+      else{
+        const words=a.split(" ").filter(w=>w.length>2);
+        const hits=words.filter(w=>n.includes(w)).length;
+        score=hits*12;
+      }
+      if(score>bestScore){bestScore=score;best=c}
+    }
+  }
+  return best;
+}
+function findTeacher(text, course){
+  let m=text.match(/(?:teacher|instructor|professor)\s*[:\-]\s*([^\n\r]+)/i);
+  if(m)return m[1].replace(/\s*(?:due|points?|available)\s*:?.*$/i,"").trim();
+  if(course){
+    const tn=normalize(course.teacher);
+    if(tn && normalize(text).includes(tn))return course.teacher;
+  }
+  for(const c of data.classes){
+    if(c.teacher && normalize(text).includes(normalize(c.teacher)))return c.teacher;
+  }
+  return course?.teacher||"";
+}
+function findPoints(text){
+  let m=text.match(/(?:points?\s*(?:possible)?|points?)\s*[:\-]?\s*(\d+(?:\.\d+)?)\b/i);
+  if(m)return m[1];
+  m=text.match(/\b(\d+(?:\.\d+)?)\s*(?:pts?|points?)\b/i);
+  return m?m[1]:"";
+}
+function cleanName(lines){
+  const bad=/^(due|due date|points?|points possible|available|until|teacher|instructor|professor|submission|attempts?)\b/i;
+  for(const line of lines){
+    let x=line.trim();
+    if(!x||bad.test(x))continue;
+    if(/^(canvas|assignments?|modules?|home|dashboard|courses?)$/i.test(x))continue;
+    if(/^\d{1,2}:\d{2}/.test(x))continue;
+    return x.replace(/\s+\|\s+.*$/,"").trim();
+  }
+  return "Canvas assignment";
+}
+function extractCanvas(text){
+  const raw=text.replace(/\r/g,"").trim();
+  const lines=raw.split(/\n+/).map(x=>x.replace(/\t+/g," ").replace(/\s+/g," ").trim()).filter(Boolean);
+  const course=findClass(raw);
+  const teacher=findTeacher(raw,course);
+  const dueMatch=raw.match(/(?:due(?: date)?|deadline|due on)\s*[:\-]?\s*([^\n\r]+)/i);
+  const due=parseDate(dueMatch?dueMatch[1]:raw);
+  const points=findPoints(raw);
+  const name=cleanName(lines);
+  const noteLines=lines.filter(x=>x!==name)
+    .filter(x=>!/(?:^|\s)(?:due(?: date)?|deadline)\s*[:\-]?/i.test(x))
+    .filter(x=>!/(?:^|\s)(?:points?|points possible)\s*[:\-]?\s*\d/i.test(x))
+    .filter(x=>!course || normalize(x)!==normalize(course.name))
+    .filter(x=>!teacher || normalize(x)!==normalize(teacher));
+  return {name,class:course?.id||data.classes[0]?.id||"",teacher,due,points,priority:"P1",status:"Not started",hours:1,notes:noteLines.slice(0,8).join(" ")};
+}
+function render(){
+ document.getElementById("heroName").textContent=data.profile.name||"Student";
+ let today=new Date();today.setHours(0,0,0,0);
+ let open=data.assignments.filter(a=>a.status!=="Completed");
+ let soon=open.filter(a=>a.due && Math.ceil((new Date(a.due+"T12:00")-today)/864e5)>=0 && Math.ceil((new Date(a.due+"T12:00")-today)/864e5)<=7).length;
+ document.getElementById("soon").textContent=soon;
+ document.getElementById("progress").textContent=data.assignments.filter(a=>a.status==="In progress").length;
+ document.getElementById("done").textContent=data.assignments.filter(a=>a.status==="Completed").length;
+ document.getElementById("hours").textContent=open.reduce((n,a)=>n+Number(a.hours||0),0).toFixed(1).replace(".0","")+"h";
+ let next=open.slice().sort((a,b)=>(a.due||"9999").localeCompare(b.due||"9999")).slice(0,6);
+ document.getElementById("next").innerHTML=next.length?next.map(a=>`<div class="row"><i class="dot ${a.priority.toLowerCase()}"></i><div><div class="title">${esc(a.name)}</div><div class="meta">${esc(cls(a.class).name)} · ${esc(a.teacher||cls(a.class).teacher)}</div></div><div class="due">${fmt(a.due)}</div></div>`).join(""):"<p>You're caught up 🎉</p>";
+ let totals=data.classes.map(c=>({c,total:open.filter(a=>a.class===c.id).reduce((n,a)=>n+Number(a.hours||0),0)})).filter(x=>x.total), max=Math.max(1,...totals.map(x=>x.total));
+ document.getElementById("bars").innerHTML=totals.map(x=>`<div class="bar"><div class="barline"><span>${esc(x.c.name)}</span><b>${x.total}h</b></div><div class="track"><div class="fill" style="width:${x.total/max*100}%;background:${x.c.color}"></div></div></div>`).join("")||"<p>No remaining workload.</p>";
+ renderList();renderClasses();renderCalendar();
+}
+function renderList(){
+ let q=(document.getElementById("search")?.value||"").toLowerCase(),f=document.getElementById("filter")?.value||"All statuses";
+ let arr=data.assignments.filter(a=>(!q||[a.name,a.teacher,cls(a.class).name].join(" ").toLowerCase().includes(q))&&(f==="All statuses"||a.status===f)).sort((a,b)=>(a.due||"9999").localeCompare(b.due||"9999"));
+ document.getElementById("list").innerHTML=arr.length?arr.map(a=>`<div class="assignment"><div><div class="title"><i class="dot ${a.priority.toLowerCase()}" style="margin-right:7px"></i>${esc(a.name)}</div><div class="meta">${esc(cls(a.class).name)} · ${esc(a.teacher||cls(a.class).teacher)} · Due ${fmt(a.due)}${a.points?` · ${esc(a.points)} pts`:""}</div><div class="chips"><span class="chip">${a.priority}</span><span class="chip">${a.hours||0}h</span></div></div><select data-index="${data.assignments.indexOf(a)}"><option ${a.status==="Not started"?"selected":""}>Not started</option><option ${a.status==="In progress"?"selected":""}>In progress</option><option ${a.status==="Completed"?"selected":""}>Completed</option></select></div>`).join(""):"<div class='panel'><p>No assignments match your search.</p></div>";
+ document.querySelectorAll("#list select").forEach(s=>s.onchange=e=>{data.assignments[e.target.dataset.index].status=e.target.value;save();render();toast("Status updated")});
+}
+function renderClasses(){
+ document.getElementById("classlist").innerHTML=data.classes.map(c=>{let r=data.assignments.filter(a=>a.class===c.id&&a.status!=="Completed");return `<div class="card class"><span class="chip">${esc(c.type)}</span><h3>${esc(c.name)}</h3><p>${esc(c.teacher)}</p><div class="big">${r.length}</div><p>assignments remaining · ${r.reduce((n,a)=>n+Number(a.hours||0),0)}h workload</p></div>`}).join("");
+}
+let cursor=new Date();
+function renderCalendar(){
+ let y=cursor.getFullYear(),m=cursor.getMonth();
+ document.getElementById("month").textContent=cursor.toLocaleDateString(undefined,{month:"long",year:"numeric"});
+ let first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),out="";
+ for(let i=0;i<42;i++){
+   let n=i-first+1,d=new Date(y,m,n),mut=n<1||n>days,num=mut?(n<1?new Date(y,m,0).getDate()+n:n-days):n;
+   let iso=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`,as=data.assignments.filter(a=>a.due===iso);
+   out+=`<div class="day" style="${mut?"opacity:.45":""}"><b>${num}</b>${as.slice(0,3).map(a=>`<small>${esc(a.name)}</small>`).join("")}</div>`;
+ }
+ document.getElementById("days").innerHTML=out;
+}
+function openModal(id){document.getElementById(id).classList.add("open")}
+function closeModal(id){document.getElementById(id).classList.remove("open")}
+
+document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".view").forEach(v=>v.classList.remove("show"));
+ document.getElementById(b.dataset.view).classList.add("show");
+ document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===b));
+});
+document.getElementById("add").onclick=document.getElementById("add2").onclick=()=>{
+ document.getElementById("classSelect").innerHTML=data.classes.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");
+ openModal("assignmentModal");
+};
+document.getElementById("form").onsubmit=e=>{
+ e.preventDefault();let f=new FormData(e.target),c=cls(f.get("class"));
+ data.assignments.push({name:f.get("name"),class:f.get("class"),teacher:f.get("teacher")||c.teacher,status:f.get("status"),priority:f.get("priority"),due:f.get("due"),hours:Number(f.get("hours")||1),points:f.get("points"),notes:f.get("notes")});
+ save();closeModal("assignmentModal");e.target.reset();render();toast("Assignment added ✓");
+};
+document.getElementById("paste").onclick=document.getElementById("paste2").onclick=()=>openModal("pasteModal");
+document.getElementById("clearPaste").onclick=()=>{document.getElementById("pasteText").value="";document.getElementById("preview").innerHTML=""};
+document.getElementById("clipboardBtn").onclick=async()=>{
+ try{
+   const text=await navigator.clipboard.readText();
+   if(!text) throw new Error();
+   document.getElementById("pasteText").value=text;
+   toast("Canvas text pasted");
+   document.getElementById("parse").click();
+ }catch(e){toast("Clipboard access was blocked — paste with Ctrl+V instead.");document.getElementById("pasteText").focus()}
+};
+document.getElementById("parse").onclick=()=>{
+ let t=document.getElementById("pasteText").value.trim();
+ if(!t)return toast("Paste the Canvas assignment first.");
+ let p=extractCanvas(t);
+ let c=cls(p.class);
+ document.getElementById("preview").innerHTML=`
+ <div class="preview">
+ <b>Review what was found</b>
+ <div class="extractgrid">
+  <label>Assignment name<input id="exName" value="${esc(p.name)}"></label>
+  <label>Class<select id="exClass">${data.classes.map(x=>`<option value="${x.id}" ${x.id===p.class?"selected":""}>${esc(x.name)}</option>`).join("")}</select></label>
+  <label>Teacher<input id="exTeacher" value="${esc(p.teacher||c.teacher)}"></label>
+  <label>Due date<input id="exDue" type="date" value="${esc(p.due)}"></label>
+  <label>Points<input id="exPoints" type="number" value="${esc(p.points)}"></label>
+  <label>Estimated hours<input id="exHours" type="number" step=".25" value="1"></label>
+  <label>Priority<select id="exPriority"><option>P0</option><option selected>P1</option><option>P2</option><option>P3</option></select></label>
+  <label>Status<select id="exStatus"><option selected>Not started</option><option>In progress</option><option>Completed</option></select></label>
+  <label class="full">Notes<textarea id="exNotes" rows="4">${esc(p.notes)}</textarea></label>
+ </div>
+ <button class="btn primary" style="margin-top:12px;width:100%" id="confirm">Add to Study Buddy</button>
+ </div>`;
+ document.getElementById("exClass").onchange=()=>{
+   const selected=cls(document.getElementById("exClass").value);
+   const teacher=document.getElementById("exTeacher");
+   if(!teacher.value || teacher.value===c.teacher)teacher.value=selected.teacher;
+ };
+ document.getElementById("confirm").onclick=()=>{
+   let cid=document.getElementById("exClass").value,selected=cls(cid);
+   let due=document.getElementById("exDue").value;
+   if(!document.getElementById("exName").value.trim())return toast("Add an assignment name.");
+   if(!due)return toast("Canvas did not provide a due date. Enter one above.");
+   data.assignments.push({
+     name:document.getElementById("exName").value.trim(),class:cid,
+     teacher:document.getElementById("exTeacher").value.trim()||selected.teacher,
+     due,points:document.getElementById("exPoints").value,priority:document.getElementById("exPriority").value,
+     status:document.getElementById("exStatus").value,hours:Number(document.getElementById("exHours").value||1),
+     notes:document.getElementById("exNotes").value
+   });
+   save();closeModal("pasteModal");document.getElementById("preview").innerHTML="";document.getElementById("pasteText").value="";render();toast("Canvas assignment added ✓");
+ };
+};
+document.getElementById("search").oninput=renderList;document.getElementById("filter").onchange=renderList;
+document.getElementById("prev").onclick=()=>{cursor.setMonth(cursor.getMonth()-1);renderCalendar()};
+document.getElementById("nextm").onclick=()=>{cursor.setMonth(cursor.getMonth()+1);renderCalendar()};
+document.getElementById("account").onclick=()=>{document.getElementById("name").value=data.profile.name;document.getElementById("school").value=data.profile.school;openModal("accountModal")};
+document.getElementById("saveAccount").onclick=()=>{data.profile.name=document.getElementById("name").value||"Student";data.profile.school=document.getElementById("school").value||"";save();closeModal("accountModal");render();toast("Profile saved")};
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
+render();
+</script>
+</body>
+</html>
